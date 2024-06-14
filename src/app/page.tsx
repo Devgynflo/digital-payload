@@ -1,30 +1,8 @@
 import Link from "next/link";
-import { MaxWidthWrapper } from "@/components/ui/max-width-wrapper";
+import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowDownToLine, CheckCircle, Leaf, LeafIcon } from "lucide-react";
-
+import { PERKS } from "@/config";
 export default function Home() {
-  const PERKS = [
-    {
-      name: "Instant Delivery",
-      Icon: ArrowDownToLine,
-      description:
-        "Get your assets delivered to your email in seconds and download them right away.",
-    },
-    {
-      name: "Guarantee Quality",
-      Icon: CheckCircle,
-      description:
-        "Every asset on our platform is verified by our team to ensure our highest quality standards. Not happy ? We offer a 30 day refunded guarantee",
-    },
-    {
-      name: "For the planet ",
-      Icon: Leaf,
-      description:
-        "We've pledged 1% of sales to the preservation and restoration of the natural environment.",
-    },
-  ];
-
   return (
     <>
       <MaxWidthWrapper>
