@@ -14,6 +14,7 @@ import {
   AuthCredentialsValidator,
   TAuthCredentialsValidator,
 } from "@/lib/validators";
+import { trpc } from "@/trpc/client";
 
 interface SignUpPageProps {}
 
@@ -26,8 +27,10 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
     resolver: zodResolver(AuthCredentialsValidator),
   });
 
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
+
   function onSubmit({ email, password }: TAuthCredentialsValidator) {
-    console.log("Send data to server");
+    mutate({ email, password });
   }
   return (
     <>

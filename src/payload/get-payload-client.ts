@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-import payload from "payload";
+import payload, { Payload } from "payload";
 import type { InitOptions } from "payload/config";
 
 dotenv.config({
@@ -20,7 +20,9 @@ interface Args {
   initOptions?: Partial<InitOptions>;
 }
 
-export async function getPayloadClient({ initOptions }: Args) {
+export async function getPayloadClient({
+  initOptions,
+}: Args = {}): Promise<Payload> {
   if (!process.env.PAYLOAD_SECRET) {
     throw new Error(
       "Something went wrong with payload server , payload secret is missing",
