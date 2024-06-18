@@ -41,7 +41,42 @@ var validators_1 = require("../lib/validators");
 var trpc_1 = require("./trpc");
 var get_payload_client_1 = require("../payload/get-payload-client");
 var server_1 = require("@trpc/server");
+var zod_1 = require("zod");
 exports.authrouter = (0, trpc_1.router)({
+    signIn: trpc_1.publicProcedure
+        .input(validators_1.AuthCredentialsValidator)
+        .mutation(function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+        var res, email, password, payload, error_1;
+        var input = _b.input, ctx = _b.ctx;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    res = ctx.res;
+                    email = input.email, password = input.password;
+                    return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)()];
+                case 1:
+                    payload = _c.sent();
+                    _c.label = 2;
+                case 2:
+                    _c.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, payload.login({
+                            collection: "users",
+                            data: {
+                                email: email,
+                                password: password,
+                            },
+                            res: res,
+                        })];
+                case 3:
+                    _c.sent();
+                    return [2 /*return*/, { success: true }];
+                case 4:
+                    error_1 = _c.sent();
+                    throw new server_1.TRPCError({ code: "UNAUTHORIZED" });
+                case 5: return [2 /*return*/];
+            }
+        });
+    }); }),
     createPayloadUser: trpc_1.publicProcedure
         .input(validators_1.AuthCredentialsValidator)
         .mutation(function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
@@ -74,6 +109,30 @@ exports.authrouter = (0, trpc_1.router)({
                 case 3:
                     _c.sent();
                     return [2 /*return*/, { success: true, sentToEmail: email }];
+            }
+        });
+    }); }),
+    verifyEmail: trpc_1.publicProcedure
+        .input(zod_1.z.object({ token: zod_1.z.string() }))
+        .query(function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+        var token, payload, isVerified;
+        var input = _b.input;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    token = input.token;
+                    return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)()];
+                case 1:
+                    payload = _c.sent();
+                    return [4 /*yield*/, payload.verifyEmail({
+                            collection: "users",
+                            token: token,
+                        })];
+                case 2:
+                    isVerified = _c.sent();
+                    if (!isVerified)
+                        throw new server_1.TRPCError({ code: "UNAUTHORIZED" });
+                    return [2 /*return*/, { success: true }];
             }
         });
     }); }),

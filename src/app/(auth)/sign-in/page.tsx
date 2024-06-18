@@ -16,7 +16,6 @@ import {
 } from "@/lib/validators";
 import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
-import { ZodError } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface SignInPageProps {}
@@ -37,18 +36,24 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
   const { mutate: signIn, isLoading } = trpc.auth.signIn.useMutation({
     onSuccess: () => {
       toast.success("Signed in successfully");
-      router.refresh();
 
       if (origin) {
         router.push(`/${origin}`);
+        router.refresh();
+
+        return;
       }
 
       if (isSeller) {
         router.push("/sell");
+        router.refresh();
+
         return;
       }
-
       router.push("/");
+      router.refresh();
+
+      return;
     },
     onError: (err) => {
       if (err.data?.code === "UNAUTHORIZED") {

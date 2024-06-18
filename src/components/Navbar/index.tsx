@@ -7,6 +7,7 @@ import { buttonVariants } from "../ui/button";
 import { Cart } from "@/components/Navbar/Cart";
 import { getServerSideUser } from "@/lib/payload.utils";
 import { cookies } from "next/headers";
+import { UserAccountNav } from "./UserAccountNav";
 
 interface NavbarProps {}
 
@@ -45,7 +46,7 @@ export const Navbar: NextPage<NavbarProps> = async ({}) => {
                   <span className="size-6 w-px bg-gray-200" aria-hidden />
 
                   {user ? (
-                    <p></p>
+                    <UserAccountNav user={user} />
                   ) : (
                     <>
                       <Link
