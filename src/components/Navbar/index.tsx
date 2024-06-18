@@ -5,11 +5,14 @@ import { Icons } from "../icons";
 import { NavItems } from "./Items";
 import { buttonVariants } from "../ui/button";
 import { Cart } from "@/components/Navbar/Cart";
+import { getServerSideUser } from "@/lib/payload.utils";
+import { cookies } from "next/headers";
 
 interface NavbarProps {}
 
-export const Navbar: NextPage<NavbarProps> = ({}) => {
-  const user = null;
+export const Navbar: NextPage<NavbarProps> = async ({}) => {
+  const nextCookies = cookies();
+  const { user } = await getServerSideUser(nextCookies);
 
   return (
     <header className="sticky inset-0 top-0 z-50 h-16 bg-white">
