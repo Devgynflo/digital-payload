@@ -1,8 +1,58 @@
+import { z } from "zod";
 import { authrouter } from "./auth.router";
-import { router } from "./trpc";
+import { publicProcedure, router } from "./trpc";
+import { QueryValidator } from "../lib/validators/query-validator";
+import { getPayloadClient } from "../payload/get-payload-client";
 
 export const appRouter = router({
   auth: authrouter,
+  getInfiniteProducts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100),
+        cursor: z.number().nullish(),
+        query: QueryValidator,
+      }),
+    )
+    .query(async ({ input }) => {
+      const { query, cursor } = input;
+      const { sort, limit, ...queryOpts } = query;
+
+      const payload = await getPayloadClient();
+
+      const parsedQueryOpts: Record<string, { equals: string }> = {};
+
+      Object.entries(queryOpts).forEach(([key, value]) => {
+        parsedQueryOpts[key] = {
+          equals: value,
+        };
+      });
+
+      const page = cursor || 1;
+
+      const {
+        docs: items,
+        hasNextPage,
+        nextPage,
+      } = await payload.find({
+        collection: "products",
+        where: {
+          approved_for_sales: {
+            equals: "approved",
+          },
+          ...parsedQueryOpts,
+        },
+        sort,
+        depth: 1,
+        limit,
+        page,
+      });
+
+      return {
+        items,
+        nextPage: hasNextPage ? nextPage : null,
+      };
+    }),
 });
 
 export type AppRouter = typeof appRouter;

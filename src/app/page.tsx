@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { PERKS } from "@/config";
+import { ProductReel } from "@/components/Product/reel";
 export default function Home() {
   return (
     <>
@@ -25,7 +26,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* TODO: List Products */}
+        <ProductReel
+          title="Brand new"
+          href="/products"
+          query={{ sort: "desc", limit: 4 }}
+        />
       </MaxWidthWrapper>
       <section className="border-t border-gray-200 bg-gray-50">
         <MaxWidthWrapper className="py-20">
