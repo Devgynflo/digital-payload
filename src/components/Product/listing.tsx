@@ -45,7 +45,7 @@ export const ProductListing: NextPage<ProductListingProps> = ({
           "group/main invisible h-full w-full cursor-pointer",
           isVisible && "visible animate-in fade-in-5",
         )}
-        href={`/products/${product.id}`}
+        href={`/product/${product.id}`}
       >
         <div className="flex w-full flex-col">
           <ImageSlider urls={validUrls} />
