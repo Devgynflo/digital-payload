@@ -3,7 +3,6 @@
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -12,17 +11,23 @@ import {
 import { ShoppingCart } from "lucide-react";
 
 import { NextPage } from "next";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import Image from "next/image";
+import { useCart } from "@/hooks/use-cart";
+import { CartItem } from "./cart-item";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CartProps {}
 
 export const Cart: NextPage<CartProps> = ({}) => {
-  const itemCount = 0;
+  const { items, removeItem, clearCart } = useCart();
   const fee = 1;
+  const cartTotal = items.reduce((acc, item) => {
+    return (acc += item.product.price);
+  }, 0);
 
   return (
     <Sheet>
@@ -32,24 +37,23 @@ export const Cart: NextPage<CartProps> = ({}) => {
           aria-hidden
         />
         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          0
+          {items.length}
         </span>
       </SheetTrigger>
 
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Cart (0)</SheetTitle>
-          {/* <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription> */}
+          <SheetTitle>Cart ({items.length})</SheetTitle>
         </SheetHeader>
 
-        {itemCount > 0 ? (
+        {items.length > 0 ? (
           <>
             <div className="flex w-full flex-col pr-6">
-              {/* TODO: cart logic */}
-              Cart items
+              <ScrollArea>
+                {items.map(({ product }, i) => (
+                  <CartItem key={i} product={product} />
+                ))}
+              </ScrollArea>
             </div>
             <div className="space-y-4 pr-6">
               <Separator />
@@ -64,7 +68,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
                 </div>
                 <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(fee)}</span>
+                  <span>{formatPrice(cartTotal + fee)}</span>
                 </div>
               </div>
 
