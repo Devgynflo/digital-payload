@@ -53,7 +53,6 @@ exports.paymentRouter = (0, trpc_1.router)({
                 case 0:
                     user = ctx.user;
                     productIds = input.productIds;
-                    console.log("🚀 ~ .mutation ~ productIds:", !productIds.length);
                     if (!productIds.length)
                         throw new server_1.TRPCError({ code: "BAD_REQUEST" });
                     return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)()];
@@ -70,14 +69,14 @@ exports.paymentRouter = (0, trpc_1.router)({
                 case 2:
                     products = (_c.sent()).docs;
                     filteredProducts = products.filter(function (product) {
-                        return Boolean(product.id);
+                        return Boolean(product.priceId);
                     });
                     return [4 /*yield*/, payload.create({
                             collection: "orders",
                             data: {
                                 user: user.id,
                                 is_paid: false,
-                                products: filteredProducts,
+                                products: filteredProducts.map(function (item) { return item.id; }),
                             },
                         })];
                 case 3:
@@ -90,7 +89,7 @@ exports.paymentRouter = (0, trpc_1.router)({
                         });
                     });
                     line_items.push({
-                        price: "prod_Pl8rzadb0UATjo",
+                        price: process.env.STRIPE_PRODUCT_TRANSACTION_FEE,
                         quantity: 1,
                         adjustable_quantity: {
                             enabled: false,
@@ -102,9 +101,9 @@ exports.paymentRouter = (0, trpc_1.router)({
                     return [4 /*yield*/, stripe_1.stripe.checkout.sessions.create({
                             success_url: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/thank-you?orderId=").concat(order.id),
                             cancel_url: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/cart"),
-                            /* shipping_address_collection: {
-                              allowed_countries: ["FR"],
-                            }, */
+                            shipping_address_collection: {
+                                allowed_countries: ["FR"],
+                            },
                             payment_method_types: ["card", "paypal"],
                             mode: "payment",
                             metadata: {

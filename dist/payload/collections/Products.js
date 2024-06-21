@@ -77,7 +77,7 @@ exports.Products = {
                                     name: data.name,
                                     default_price_data: {
                                         currency: "EUR",
-                                        unit_amount: Math.round(Math.floor(data.price) * 100),
+                                        unit_amount: Math.round(data.price * 100),
                                     },
                                 })];
                         case 1:
