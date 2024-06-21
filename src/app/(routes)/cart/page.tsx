@@ -4,17 +4,29 @@ import { Button } from "@/components/ui/button";
 import { PRODUCT_CATEGORIES } from "@/config";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
 import { Check, Loader2, X } from "lucide-react";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Props {}
 
 const CartPage: NextPage<Props> = ({}) => {
+  const router = useRouter();
+  const { mutate: createCheckoutSession, isLoading } =
+    trpc.payment.createSession.useMutation({
+      onSuccess: ({ url }) => {
+        if (url) {
+          router.push(url);
+        }
+      },
+    });
   const { items, removeItem } = useCart();
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const productIds = items.map(({ product }) => product.id);
   const fee = 1;
   const cartTotal = items.reduce((acc, { product }) => {
     return (acc += product.price);
@@ -193,8 +205,17 @@ const CartPage: NextPage<Props> = ({}) => {
             </div>
 
             <div className="mt-6">
-              <Button className="w-full" size={"lg"}>
-                Checkout
+              <Button
+                disabled={!items.length || isLoading}
+                className="w-full"
+                size={"lg"}
+                onClick={() => createCheckoutSession({ productIds })}
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                ) : (
+                  "Checkout"
+                )}
               </Button>
             </div>
           </section>
