@@ -38,7 +38,7 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
       toast.success("Signed in successfully");
 
       if (origin) {
-        router.push(`/${origin}`);
+        router.push(`${origin}`);
         router.refresh();
 
         return;
