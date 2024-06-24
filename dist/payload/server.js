@@ -69,6 +69,8 @@ var trpcExpress = __importStar(require("@trpc/server/adapters/express"));
 var trpc_1 = require("../trpc");
 var build_1 = __importDefault(require("next/dist/build"));
 var path_1 = __importDefault(require("path"));
+var body_parser_1 = __importDefault(require("body-parser"));
+var webhooks_1 = require("../webhooks");
 var app = (0, express_1.default)();
 var PORT = Number(process.env.EXPRESS_PORT) || 3000;
 var createContext = function (_a) {
@@ -79,20 +81,27 @@ var createContext = function (_a) {
     });
 };
 var start = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var payload;
+    var webhookMiddleware, payload;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)({
-                    initOptions: {
-                        express: app,
-                        onInit: function (cms) { return __awaiter(void 0, void 0, void 0, function () {
-                            return __generator(this, function (_a) {
-                                cms.logger.info("Admin URL ".concat(cms.getAdminURL()));
-                                return [2 /*return*/];
-                            });
-                        }); },
+            case 0:
+                webhookMiddleware = body_parser_1.default.json({
+                    verify: function (req, _, buffer) {
+                        req.rawBody = buffer;
                     },
-                })];
+                });
+                app.post("/api/webhooks/stripe", webhookMiddleware, webhooks_1.stripeWebhookHandler);
+                return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)({
+                        initOptions: {
+                            express: app,
+                            onInit: function (cms) { return __awaiter(void 0, void 0, void 0, function () {
+                                return __generator(this, function (_a) {
+                                    cms.logger.info("Admin URL ".concat(cms.getAdminURL()));
+                                    return [2 /*return*/];
+                                });
+                            }); },
+                        },
+                    })];
             case 1:
                 payload = _a.sent();
                 if (process.env.NEXT_BUILD) {

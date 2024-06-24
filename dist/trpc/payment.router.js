@@ -127,4 +127,33 @@ exports.paymentRouter = (0, trpc_1.router)({
             }
         });
     }); }),
+    pollOrderStatus: trpc_1.privateProcedure
+        .input(zod_1.z.object({ orderId: zod_1.z.string() }))
+        .query(function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
+        var orderId, payload, orders, order;
+        var input = _b.input;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    orderId = input.orderId;
+                    return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)()];
+                case 1:
+                    payload = _c.sent();
+                    return [4 /*yield*/, payload.find({
+                            collection: "orders",
+                            where: {
+                                id: {
+                                    equals: orderId,
+                                },
+                            },
+                        })];
+                case 2:
+                    orders = (_c.sent()).docs;
+                    if (!orders.length)
+                        throw new server_1.TRPCError({ code: "NOT_FOUND" });
+                    order = orders[0];
+                    return [2 /*return*/, { isPaid: order.is_paid }];
+            }
+        });
+    }); }),
 });
