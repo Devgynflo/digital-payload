@@ -6,6 +6,7 @@ import { PRODUCT_CATEGORIES } from "../../config";
 import { Access, CollectionConfig } from "payload/types";
 import { Product, User } from "../payload.types";
 import { stripe } from "../../lib/stripe";
+import { slugField } from "../fields/slug";
 
 const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
   const user = req.user;
@@ -125,10 +126,6 @@ export const Products: CollectionConfig = {
       if (req.user.role === "admin") {
         return true;
       }
-      if (req.user.role === "seller") {
-        return true;
-      }
-
       return false;
     },
     read: isAdminOrHasAccess(),
@@ -147,22 +144,24 @@ export const Products: CollectionConfig = {
     },
     {
       name: "name",
-      label: "Name",
+      label: "Nom",
       type: "text",
       required: true,
     },
     {
       name: "description",
       type: "textarea",
-      label: "Product Details",
+      label: "Description",
     },
     {
-      name: "price",
-      label: "Price in EUR",
-      type: "number",
-      min: 0,
-      max: 1000,
-      required: true,
+      name: "product_usage",
+      type: "textarea",
+      label: "Usage/Utilisation du produit",
+    },
+    {
+      name: "composition",
+      type: "textarea",
+      label: "Composition",
     },
     {
       name: "category",
@@ -170,37 +169,118 @@ export const Products: CollectionConfig = {
       type: "select",
       options: PRODUCT_CATEGORIES.map(({ label, value }) => ({ label, value })),
       required: true,
+      admin: {
+        position: "sidebar",
+      },
+    },
+    slugField(),
+    {
+      name: "price",
+      label: "Prix",
+      type: "number",
+      min: 0,
+      max: 1000,
+      required: true,
+      access: {
+        create: ({ req }) => req.user.role === "admin",
+        read: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
+      admin: {
+        position: "sidebar",
+      },
     },
     {
-      name: "product_files",
-      label: "Product file(s)",
-      type: "relationship",
-      relationTo: "product_files",
-      hasMany: false,
+      name: "pricePro",
+      label: "Prix professionnel",
+      type: "number",
+      min: 0,
+      max: 1000,
+      required: true,
+      access: {
+        create: ({ req }) => req.user.role === "admin",
+        read: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "supplierPrice",
+      label: "Prix fournisseur",
+      type: "number",
+      min: 0,
+      max: 1000,
+      required: true,
+      access: {
+        create: ({ req }) => req.user.role === "admin",
+        read: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "quantity",
+      label: "Quantité du produit",
+      type: "number",
+      min: 0,
+      max: 1000,
       required: true,
     },
     {
-      name: "approved_for_sales",
-      label: "Product Status",
+      name: "capacity",
+      label: "Capacité",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "weight",
+      label: "Poids net du produit",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "isFeatured",
+      label: "Produit star ?",
       access: {
         create: ({ req }) => req.user.role === "admin",
         read: ({ req }) => req.user.role === "admin",
         update: ({ req }) => req.user.role === "admin",
       },
       type: "select",
-      defaultValue: "pending",
+      defaultValue: "false",
       options: [
         {
-          label: "Pending Verification",
-          value: "pending",
+          label: "Oui",
+          value: "true",
         },
         {
-          label: "Approved",
-          value: "approved",
+          label: "Non",
+          value: "false",
+        },
+      ],
+    },
+    {
+      name: "outOfStock",
+      label: "En stock ?",
+      access: {
+        create: ({ req }) => req.user.role === "admin",
+        read: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
+      type: "select",
+      defaultValue: "true",
+      options: [
+        {
+          label: "En stock",
+          value: "true",
         },
         {
-          label: "Denied",
-          value: "denied",
+          label: "Victime de son succès",
+          value: "false",
         },
       ],
     },
