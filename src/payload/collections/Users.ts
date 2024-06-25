@@ -1,27 +1,65 @@
-import { CollectionConfig } from "payload/types";
+import { PrimaryActionEmail } from "../../components/emails/primary-action-email";
+import { Access, CollectionConfig } from "payload/types";
+
+const adminsAndUser: Access = ({ req: { user } }) => {
+  if (user.role === "admin") return true;
+
+  return {
+    id: {
+      equals: user.id,
+    },
+  };
+};
 
 export const Users: CollectionConfig = {
   slug: "users",
   auth: {
     verify: {
       generateEmailHTML({ token }) {
-        return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}'></a>`;
+        return PrimaryActionEmail({
+          actionLabel: "Vérifiez votre adresse e-mail",
+          href: `${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}`,
+          buttonText: "Vérification du compte",
+        });
       },
     },
   },
   access: {
-    read: () => true,
+    read: adminsAndUser,
     create: () => true,
+    update: ({ req }) => req.user.role === "admin",
+    delete: ({ req }) => req.user.role === "admin",
+  },
+  admin: {
+    hidden: ({ user }) => user.role !== "admin",
+    defaultColumns: ["id"],
   },
   fields: [
+    {
+      name: "products",
+      label: "Products",
+      admin: {
+        condition: () => false,
+      },
+      type: "relationship",
+      relationTo: "products",
+      hasMany: true,
+    },
+    {
+      name: "product_files",
+      label: "Product files",
+      admin: {
+        condition: () => false,
+      },
+      type: "relationship",
+      relationTo: "product_files",
+      hasMany: true,
+    },
     {
       name: "role",
       defaultValue: "user",
       required: true,
       type: "select",
-      admin: {
-        condition: () => false,
-      },
       options: [
         {
           label: "Admin",
@@ -30,6 +68,10 @@ export const Users: CollectionConfig = {
         {
           label: "User",
           value: "user",
+        },
+        {
+          label: "Seller",
+          value: "seller",
         },
       ],
     },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useCart } from "@/hooks/use-cart";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { NextPage } from "next";
@@ -18,6 +19,7 @@ export const PaymentStatus: NextPage<PaymentStatusProps> = ({
   orderId,
 }) => {
   const router = useRouter();
+  const { clearCart } = useCart();
   const { data } = trpc.payment.pollOrderStatus.useQuery(
     { orderId },
     {
@@ -28,9 +30,10 @@ export const PaymentStatus: NextPage<PaymentStatusProps> = ({
 
   useEffect(() => {
     if (data?.isPaid) {
+      clearCart();
       router.refresh();
     }
-  }, [data?.isPaid, router]);
+  }, [data?.isPaid, router, clearCart]);
 
   return (
     <div className="mt-16 grid grid-cols-2 gap-x-4 text-sm text-gray-600">

@@ -67,7 +67,7 @@ export const ProductReel: NextPage<ProductReelProps> = ({
 
       <div className="relative">
         <div className="mt-6 flex w-full items-center">
-          <div className="grid w-full grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 sm:gap-x-6 md:grid-cols-4 lg:gap-x-8">
+          <div className="grid w-full grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 lg:gap-x-8">
             {map.map((product, i) => (
               <ProductListing
                 key={product?.id || i}

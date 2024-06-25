@@ -3,11 +3,11 @@ import { ImageSlider } from "@/components/Product/image-slider";
 import { ProductReel } from "@/components/Product/reel";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { PRODUCT_CATEGORIES } from "@/config";
-import { formatPrice } from "@/lib/utils";
+import { constructMetadata, formatPrice } from "@/lib/utils";
 import { getPayloadClient } from "@/payload/get-payload-client";
 import { Check, Shield } from "lucide-react";
 
-import { NextPage } from "next";
+import { Metadata, NextPage } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -29,6 +29,35 @@ const BREADCRUMBS = [
     href: "/products",
   },
 ];
+
+export async function generateMetadata({
+  params: { productId },
+}: ProductDetailsPageProps): Promise<Metadata> {
+  const payload = await getPayloadClient();
+  const { docs: products } = await payload.find({
+    collection: "products",
+    limit: 1,
+    where: {
+      id: {
+        equals: productId,
+      },
+      approved_for_sales: {
+        equals: "approved",
+      },
+    },
+  });
+
+  const [product] = products;
+  const urls = product.images
+    .map(({ image }) => (typeof image === "string" ? image : image.url))
+    .filter(Boolean) as string[];
+
+  return constructMetadata({
+    title: product.name,
+    description: product.description!,
+    image: urls[0],
+  });
+}
 
 const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
   params,

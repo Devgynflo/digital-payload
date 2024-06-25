@@ -23,7 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface CartProps {}
 
 export const Cart: NextPage<CartProps> = ({}) => {
-  const { items, removeItem, clearCart } = useCart();
+  const { items } = useCart();
   const fee = 1;
   const cartTotal = items.reduce((acc, item) => {
     return (acc += item.product.price);
@@ -37,13 +37,13 @@ export const Cart: NextPage<CartProps> = ({}) => {
           aria-hidden
         />
         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          {items.length}
+          {items.length ? items.length : ""}
         </span>
       </SheetTrigger>
 
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Cart ({items.length})</SheetTitle>
+          <SheetTitle>Cart</SheetTitle>
         </SheetHeader>
 
         {items.length > 0 ? (
