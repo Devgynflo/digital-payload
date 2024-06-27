@@ -23,7 +23,7 @@ export const UserAccountNav: NextPage<UserAccountNavProps> = ({ user }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="overflow-hidden">
         <Button variant={"ghost"} size={"sm"} className="relative">
-          My account
+          Mon compte
         </Button>
       </DropdownMenuTrigger>
 
@@ -35,11 +35,13 @@ export const UserAccountNav: NextPage<UserAccountNavProps> = ({ user }) => {
         </div>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href={"/sell"}>Seller Dashboard</Link>
-        </DropdownMenuItem>
+        {user && user.role === "admin" && (
+          <DropdownMenuItem asChild>
+            <Link href={"/dashboard"}>Tableau de bord</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem className="cursor-pointer" onClick={signOut}>
-          Logout
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

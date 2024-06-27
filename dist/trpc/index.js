@@ -95,9 +95,7 @@ exports.appRouter = (0, trpc_1.router)({
                     page = cursor || 1;
                     return [4 /*yield*/, payload.find({
                             collection: "products",
-                            where: __assign({ approved_for_sales: {
-                                    equals: "approved",
-                                } }, parsedQueryOpts),
+                            where: __assign({}, parsedQueryOpts),
                             sort: sort,
                             depth: 1,
                             limit: limit,

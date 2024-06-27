@@ -1,12 +1,11 @@
 "use client";
 
-import { Product } from "@/payload/payload.types";
+import { Category, Product } from "@/payload/payload.types";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { ProductPlaceholder } from "./placeholder";
 import Link from "next/link";
 import { cn, formatPrice } from "@/lib/utils";
-import { PRODUCT_CATEGORIES } from "@/config";
 import { ImageSlider } from "./image-slider";
 
 interface ProductListingProps {
@@ -19,10 +18,6 @@ export const ProductListing: NextPage<ProductListingProps> = ({
   index,
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  // Utils
-  const label = PRODUCT_CATEGORIES.find(
-    ({ value }) => value === product?.category,
-  )?.label;
 
   const validUrls = product?.images
     .map(({ image }) => (typeof image === "string" ? image : image.url))
@@ -45,12 +40,14 @@ export const ProductListing: NextPage<ProductListingProps> = ({
           "group/main invisible h-full w-full cursor-pointer",
           isVisible && "visible animate-in fade-in-5",
         )}
-        href={`/product/${product.id}`}
+        href={`/product/${product.slug}`}
       >
         <div className="flex w-full flex-col">
           <ImageSlider urls={validUrls} />
           <h3 className="mt-4 font-medium text-gray-700">{product.name}</h3>
-          <p className="mt-1 text-sm text-gray-500">{label}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {(product.categories[0] as Category).name}
+          </p>
           <p className="tex-sm mt-1 font-medium text-gray-900">
             {formatPrice(product.price)}
           </p>

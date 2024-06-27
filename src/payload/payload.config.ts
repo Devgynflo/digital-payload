@@ -7,10 +7,13 @@ import path from "path";
 import { Users } from "./collections/Users";
 
 import dotenv from "dotenv";
+// Collection
 import { Products } from "./collections/Products";
 import { Media } from "./collections/Media";
-import { ProductFiles } from "./collections/ProductFile";
+import { Categories } from "./collections/Categories";
 import { Orders } from "./collections/Orders";
+import { Brands } from "./collections/Brands";
+import { RangeProducts } from "./collections/RangeProducts";
 
 dotenv.config({
   path: path.resolve(__dirname, "../../.env"),
@@ -18,9 +21,17 @@ dotenv.config({
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-  collections: [Users, Products, Media, ProductFiles, Orders],
+  collections: [
+    Products,
+    Categories,
+    Brands,
+    RangeProducts,
+    Media,
+    Orders,
+    Users,
+  ],
   routes: {
-    admin: "/sell", // endpoint pour la partie admin
+    admin: "/dashboard", // endpoint pour la partie admin
   },
   admin: {
     user: "users", // issue => throw new DuplicateCollection('slug', duplicateSlugs)

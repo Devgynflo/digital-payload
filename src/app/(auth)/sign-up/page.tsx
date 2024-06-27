@@ -34,20 +34,21 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
   const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({
     onError: (err) => {
       if (err.data?.code === "CONFLICT") {
-        toast.error("This email is already in use. Sign in instead ?");
+        toast.error("Cette email est peut-être déjà utilisé. Connectez-vous");
         return;
       }
 
       if (err instanceof ZodError) {
-        console.log("hello");
         toast.error(err.issues[0].message);
         return;
       }
 
-      return toast.error("Something went wrong. Please try again");
+      return toast.error("Quelque chose s'est mal passé.Réessayez");
     },
     onSuccess: ({ sentToEmail }) => {
-      toast.success(`Verification email sent to ${sentToEmail}`);
+      toast.success(
+        `Un mail de vérification vous a été envoyé! (${sentToEmail})`,
+      );
       return router.push(`/verify-email?to=${sentToEmail}`);
     },
   });
@@ -61,7 +62,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col items-center space-y-2 text-center">
             <Icons.logo className="size-20" />
-            <h1 className="text-2xl font-bold">Create an account</h1>
+            <h1 className="text-2xl font-bold">Créer un compte</h1>
 
             <Link
               href={"/sign-in"}
@@ -70,7 +71,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
                 className: "gap-1.5",
               })}
             >
-              Already have an account
+              Déjà un compte ?
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -83,7 +84,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
                   <Input
                     {...register("email")}
                     type="email"
-                    placeholder="your@example@gmail.com"
+                    placeholder="email@exemple.com"
                     className={cn(errors.email && "focus-visible:ring-red-500")}
                   />
                   {errors.email && (
@@ -97,7 +98,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
                   <Input
                     {...register("password")}
                     type="password"
-                    placeholder="Password"
+                    placeholder="********"
                     className={cn(
                       errors.password && "focus-visible:ring-red-500",
                     )}
@@ -109,7 +110,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
                   )}
                 </div>
 
-                <Button disabled={isLoading}>Sign up</Button>
+                <Button disabled={isLoading}>Créez votre compte</Button>
               </div>
             </form>
           </div>

@@ -13,6 +13,10 @@ const adminsAndUser: Access = ({ req: { user } }) => {
 
 export const Users: CollectionConfig = {
   slug: "users",
+  labels: {
+    singular: "Utilisateur",
+    plural: "Utilisateurs",
+  },
   auth: {
     verify: {
       generateEmailHTML({ token }) {
@@ -43,16 +47,6 @@ export const Users: CollectionConfig = {
       },
       type: "relationship",
       relationTo: "products",
-      hasMany: true,
-    },
-    {
-      name: "product_files",
-      label: "Product files",
-      admin: {
-        condition: () => false,
-      },
-      type: "relationship",
-      relationTo: "product_files",
       hasMany: true,
     },
     {

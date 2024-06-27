@@ -3,7 +3,7 @@
 import { PRODUCT_CATEGORIES } from "@/config";
 import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
-import { Product } from "@/payload/payload.types";
+import { Category, Product } from "@/payload/payload.types";
 import { ImageIcon, X } from "lucide-react";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -13,11 +13,8 @@ interface CartItemProps {
 }
 
 export const CartItem: NextPage<CartItemProps> = ({ product }) => {
-  const { removeItem, clearCart } = useCart();
+  const { items, removeItem, clearCart } = useCart();
   const { image } = product.images[0];
-  const label = PRODUCT_CATEGORIES.find(
-    ({ value }) => value === product.category,
-  )?.label;
 
   return (
     <div className="space-y-3 py-2">
@@ -49,7 +46,7 @@ export const CartItem: NextPage<CartItemProps> = ({ product }) => {
             </span>
 
             <span className="line-clamp-1 text-xs capitalize text-muted-foreground">
-              {label}
+              {(product.categories[0] as Category).name}
             </span>
 
             <div className="mt-4 text-xs text-muted-foreground">
@@ -58,9 +55,10 @@ export const CartItem: NextPage<CartItemProps> = ({ product }) => {
                 className="flex items-center gap-1"
               >
                 <X className="h-4 w-3 text-red-500" />
-                Remove
+                Supprimer
               </button>
             </div>
+            <span className="text-red-500">{items[0].count}</span>
           </div>
         </div>
         <div className="flex flex-col space-y-1 font-medium">

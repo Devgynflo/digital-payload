@@ -18,6 +18,10 @@ const isAdminOrHasAccessToImages =
 
 export const Media: CollectionConfig = {
   slug: "media",
+  labels: {
+    singular: "Image",
+    plural: "Images",
+  },
   hooks: {
     beforeChange: [
       ({ req, data }) => {

@@ -23,10 +23,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface CartProps {}
 
 export const Cart: NextPage<CartProps> = ({}) => {
-  const { items } = useCart();
+  const { items, count, totalPrice } = useCart();
   const fee = 1;
   const cartTotal = items.reduce((acc, item) => {
-    return (acc += item.product.price);
+    return (acc += item.price);
   }, 0);
 
   return (
@@ -37,20 +37,20 @@ export const Cart: NextPage<CartProps> = ({}) => {
           aria-hidden
         />
         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          {items.length ? items.length : ""}
+          {items.length ? count() : ""}
         </span>
       </SheetTrigger>
 
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Cart</SheetTitle>
+          <SheetTitle>Panier</SheetTitle>
         </SheetHeader>
 
         {items.length > 0 ? (
           <>
             <div className="flex w-full flex-col pr-6">
               <ScrollArea>
-                {items.map(({ product }, i) => (
+                {items.map((product, i) => (
                   <CartItem key={i} product={product} />
                 ))}
               </ScrollArea>
@@ -59,16 +59,12 @@ export const Cart: NextPage<CartProps> = ({}) => {
               <Separator />
               <div className="space-y-1.5 pr-6 text-sm">
                 <div className="flex">
-                  <span className="flex-1">Shipping</span>
-                  <span>Free</span>
-                </div>
-                <div className="flex">
-                  <span className="flex-1">Transaction Fee</span>
-                  <span>{formatPrice(fee)}</span>
+                  <span className="flex-1">Frais d&apos;envoi</span>
+                  <span>Gratuit</span>
                 </div>
                 <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(cartTotal + fee)}</span>
+                  <span>{formatPrice(totalPrice() + fee)}</span>
                 </div>
               </div>
 
@@ -78,7 +74,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
                     className={buttonVariants({ className: "w-full" })}
                     href={"/cart"}
                   >
-                    Continue to checkout
+                    Commander
                   </Link>
                 </SheetTrigger>
               </SheetFooter>
@@ -97,7 +93,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
                 alt="empty shopping cart hippo"
               />
             </div>
-            <div className="text-xl font-semibold">Your cart is empty.</div>
+            <div className="text-xl font-semibold">Votre panier est vide.</div>
             <SheetTrigger asChild>
               <Link
                 className={buttonVariants({
@@ -107,7 +103,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
                 })}
                 href={"/products"}
               >
-                Add items to your cart to checkout
+                Ajoutez des produits à votre panier.
               </Link>
             </SheetTrigger>
           </div>

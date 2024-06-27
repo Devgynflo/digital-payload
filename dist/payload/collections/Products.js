@@ -57,8 +57,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Products = void 0;
-var config_1 = require("../../config");
 var stripe_1 = require("../../lib/stripe");
+var slug_1 = require("../fields/slug");
 var addUser = function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
     var user;
     var req = _b.req, data = _b.data;
@@ -127,6 +127,10 @@ var syncUser = function (_a) { return __awaiter(void 0, [_a], void 0, function (
 }); };
 exports.Products = {
     slug: "products",
+    labels: {
+        singular: "produit",
+        plural: "produits",
+    },
     admin: {
         useAsTitle: "name",
     },
@@ -175,9 +179,6 @@ exports.Products = {
             if (req.user.role === "admin") {
                 return true;
             }
-            if (req.user.role === "seller") {
-                return true;
-            }
             return false;
         },
         read: isAdminOrHasAccess(),
@@ -196,44 +197,135 @@ exports.Products = {
         },
         {
             name: "name",
-            label: "Name",
+            label: "Nom",
             type: "text",
             required: true,
         },
         {
             name: "description",
             type: "textarea",
-            label: "Product Details",
+            label: "Description",
         },
         {
+            name: "product_usage",
+            type: "textarea",
+            label: "Usage/Utilisation du produit",
+        },
+        {
+            name: "composition",
+            type: "textarea",
+            label: "Composition",
+        },
+        {
+            name: "category",
+            label: "Categorie",
+            type: "relationship",
+            relationTo: "categories",
+            required: true,
+            hasMany: true,
+            admin: {
+                position: "sidebar",
+            },
+        },
+        (0, slug_1.slugField)(),
+        {
             name: "price",
-            label: "Price in EUR",
+            label: "Prix",
+            type: "number",
+            min: 0,
+            max: 1000,
+            required: true,
+            access: {
+                create: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                read: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                update: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+            },
+            admin: {
+                position: "sidebar",
+            },
+        },
+        {
+            name: "pricePro",
+            label: "Prix professionnel",
+            type: "number",
+            min: 0,
+            max: 1000,
+            required: true,
+            access: {
+                create: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                read: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                update: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+            },
+            admin: {
+                position: "sidebar",
+            },
+        },
+        {
+            name: "supplierPrice",
+            label: "Prix fournisseur",
+            type: "number",
+            min: 0,
+            max: 1000,
+            required: true,
+            access: {
+                create: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                read: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                update: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+            },
+            admin: {
+                position: "sidebar",
+            },
+        },
+        {
+            name: "quantity",
+            label: "Quantité du produit",
             type: "number",
             min: 0,
             max: 1000,
             required: true,
         },
         {
-            name: "category",
-            label: "Category",
-            type: "select",
-            options: config_1.PRODUCT_CATEGORIES.map(function (_a) {
-                var label = _a.label, value = _a.value;
-                return ({ label: label, value: value });
-            }),
+            name: "capacity",
+            label: "Capacité",
+            type: "text",
             required: true,
         },
         {
-            name: "product_files",
-            label: "Product file(s)",
-            type: "relationship",
-            relationTo: "product_files",
-            hasMany: false,
+            name: "weight",
+            label: "Poids net du produit",
+            type: "number",
             required: true,
         },
         {
-            name: "approved_for_sales",
-            label: "Product Status",
+            name: "isFeatured",
+            label: "Produit star ?",
             access: {
                 create: function (_a) {
                     var req = _a.req;
@@ -249,19 +341,45 @@ exports.Products = {
                 },
             },
             type: "select",
-            defaultValue: "pending",
+            defaultValue: "_isFalse",
             options: [
                 {
-                    label: "Pending Verification",
-                    value: "pending",
+                    label: "Oui",
+                    value: "_isTrue",
                 },
                 {
-                    label: "Approved",
-                    value: "approved",
+                    label: "Non",
+                    value: "_isFalse",
+                },
+            ],
+        },
+        {
+            name: "outOfStock",
+            label: "En stock ?",
+            access: {
+                create: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                read: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+                update: function (_a) {
+                    var req = _a.req;
+                    return req.user.role === "admin";
+                },
+            },
+            type: "select",
+            defaultValue: "_isTrue",
+            options: [
+                {
+                    label: "En stock",
+                    value: "_isTrue",
                 },
                 {
-                    label: "Denied",
-                    value: "denied",
+                    label: "Victime de son succès",
+                    value: "_isFalse",
                 },
             ],
         },
@@ -291,7 +409,7 @@ exports.Products = {
         },
         {
             name: "images",
-            label: "Product images",
+            label: "Image(s) du produit",
             minRows: 1,
             maxRows: 4,
             type: "array",

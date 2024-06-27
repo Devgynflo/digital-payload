@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PRODUCT_CATEGORIES } from "@/config";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
+import { Category } from "@/payload/payload.types";
 import { trpc } from "@/trpc/client";
 import { Check, Loader2, X } from "lucide-react";
 import { NextPage } from "next";
@@ -26,9 +27,9 @@ const CartPage: NextPage<Props> = ({}) => {
     });
   const { items, removeItem } = useCart();
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const productIds = items.map(({ product }) => product.id);
+  const productIds = items.map((product) => product.id);
   const fee = 1;
-  const cartTotal = items.reduce((acc, { product }) => {
+  const cartTotal = items.reduce((acc, product) => {
     return (acc += product.price);
   }, 0);
 
@@ -86,10 +87,8 @@ const CartPage: NextPage<Props> = ({}) => {
               )}
             >
               {isMounted &&
-                items.map(({ product }) => {
-                  const label = PRODUCT_CATEGORIES.find(
-                    ({ value }) => value === product.category,
-                  )?.label;
+                items.map((product) => {
+                  const label = (product.categories[0] as Category).name;
 
                   const { image } = product.images[0];
 

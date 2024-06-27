@@ -78,6 +78,10 @@ const syncUser: AfterChangeHook<Product> = async ({ req, doc }) => {
 
 export const Products: CollectionConfig = {
   slug: "products",
+  labels: {
+    singular: "Produit",
+    plural: "Produits",
+  },
   admin: {
     useAsTitle: "name",
   },
@@ -164,11 +168,32 @@ export const Products: CollectionConfig = {
       label: "Composition",
     },
     {
-      name: "category",
-      label: "Category",
-      type: "select",
-      options: PRODUCT_CATEGORIES.map(({ label, value }) => ({ label, value })),
+      name: "brands",
+      label: "Marque",
+      type: "relationship",
+      relationTo: "brands",
       required: true,
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "range_product",
+      label: "Gamme de produit",
+      type: "relationship",
+      relationTo: "range_products",
+      required: true,
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "categories",
+      label: "Categorie",
+      type: "relationship",
+      relationTo: "categories",
+      required: true,
+      hasMany: true,
       admin: {
         position: "sidebar",
       },
@@ -251,15 +276,15 @@ export const Products: CollectionConfig = {
         update: ({ req }) => req.user.role === "admin",
       },
       type: "select",
-      defaultValue: "false",
+      defaultValue: "_isFalse",
       options: [
         {
           label: "Oui",
-          value: "true",
+          value: "_isTrue",
         },
         {
           label: "Non",
-          value: "false",
+          value: "_isFalse",
         },
       ],
     },
@@ -272,15 +297,15 @@ export const Products: CollectionConfig = {
         update: ({ req }) => req.user.role === "admin",
       },
       type: "select",
-      defaultValue: "true",
+      defaultValue: "_isTrue",
       options: [
         {
           label: "En stock",
-          value: "true",
+          value: "_isTrue",
         },
         {
           label: "Victime de son succès",
-          value: "false",
+          value: "_isFalse",
         },
       ],
     },
@@ -310,7 +335,7 @@ export const Products: CollectionConfig = {
     },
     {
       name: "images",
-      label: "Product images",
+      label: "Image(s) du produit",
       minRows: 1,
       maxRows: 4,
       type: "array",

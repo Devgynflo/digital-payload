@@ -13,11 +13,11 @@ interface AddToCartButtonProps {
 export const AddToCartButton: NextPage<AddToCartButtonProps> = ({
   product,
 }) => {
-  const { addItem } = useCart();
+  const { addItem, incrementItem } = useCart();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const { items } = useCart();
 
-  const isInCart = items.some(({ product: item }) => item.id === product.id);
+  const isInCart = items.some((item) => item.id === product.id);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -31,6 +31,9 @@ export const AddToCartButton: NextPage<AddToCartButtonProps> = ({
 
   function handleClick() {
     setIsSuccess(true);
+    if (isInCart) {
+      incrementItem(product.id);
+    }
     addItem(product);
   }
 
@@ -38,10 +41,10 @@ export const AddToCartButton: NextPage<AddToCartButtonProps> = ({
     <Button
       size={"lg"}
       className="w-full"
-      disabled={isSuccess || isInCart}
+      disabled={isSuccess}
       onClick={handleClick}
     >
-      {isSuccess ? "Added" : "Add to Cart"}
+      {isSuccess ? "Rajouté" : "Ajouter"}
     </Button>
   );
 };

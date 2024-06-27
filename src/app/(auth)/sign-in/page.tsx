@@ -23,7 +23,6 @@ interface SignInPageProps {}
 const SignInPage: NextPage<SignInPageProps> = ({}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const isSeller = searchParams.get("as") === "seller";
   const origin = searchParams.get("origin");
   const {
     register,
@@ -39,13 +38,6 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
 
       if (origin) {
         router.push(`${origin}`);
-        router.refresh();
-
-        return;
-      }
-
-      if (isSeller) {
-        router.push("/sell");
         router.refresh();
 
         return;
@@ -80,9 +72,7 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col items-center space-y-2 text-center">
             <Icons.logo className="size-20" />
-            <h1 className="text-2xl font-bold">
-              Sign to your {isSeller && "seller "}account
-            </h1>
+            <h1 className="text-2xl font-bold">Connectez-vous</h1>
 
             <Link
               href={"/sign-up"}
@@ -91,7 +81,7 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
                 className: "gap-1.5",
               })}
             >
-              Don&apos; have an account ? Create it now
+              Aucun compte ? Creéz en un
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -104,7 +94,7 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
                   <Input
                     {...register("email")}
                     type="email"
-                    placeholder="your@example@gmail.com"
+                    placeholder="email@exemple.com"
                     className={cn(errors.email && "focus-visible:ring-red-500")}
                   />
                   {errors.email && (
@@ -114,11 +104,11 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
                   )}
                 </div>
                 <div className="grid gap-1 py-2">
-                  <Label htmlFor="email">Password</Label>
+                  <Label htmlFor="email">Mot de passe</Label>
                   <Input
                     {...register("password")}
                     type="password"
-                    placeholder="Password"
+                    placeholder="********"
                     className={cn(
                       errors.password && "focus-visible:ring-red-500",
                     )}
@@ -130,39 +120,9 @@ const SignInPage: NextPage<SignInPageProps> = ({}) => {
                   )}
                 </div>
 
-                <Button disabled={isLoading}>Sign in</Button>
+                <Button disabled={isLoading}>Connection</Button>
               </div>
             </form>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center" aria-hidden>
-                <span className="w-full border-t" />
-              </div>
-
-              <div className="relative flex items-center justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  or
-                </span>
-              </div>
-            </div>
-
-            {isSeller ? (
-              <Button
-                onClick={continueAsCustomer}
-                variant={"secondary"}
-                disabled={isLoading}
-              >
-                Continue as customer
-              </Button>
-            ) : (
-              <Button
-                onClick={continueAsSeller}
-                variant={"secondary"}
-                disabled={isLoading}
-              >
-                Continue as seller
-              </Button>
-            )}
           </div>
         </div>
       </div>

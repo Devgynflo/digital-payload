@@ -57,16 +57,6 @@ exports.Users = {
             hasMany: true,
         },
         {
-            name: "product_files",
-            label: "Product files",
-            admin: {
-                condition: function () { return false; },
-            },
-            type: "relationship",
-            relationTo: "product_files",
-            hasMany: true,
-        },
-        {
             name: "role",
             defaultValue: "user",
             required: true,

@@ -12,14 +12,14 @@ var Users_1 = require("./collections/Users");
 var dotenv_1 = __importDefault(require("dotenv"));
 var Products_1 = require("./collections/Products");
 var Media_1 = require("./collections/Media");
-var ProductFile_1 = require("./collections/ProductFile");
+var Categories_1 = require("./collections/Categories");
 var Orders_1 = require("./collections/Orders");
 dotenv_1.default.config({
     path: path_1.default.resolve(__dirname, "../../.env"),
 });
 exports.default = (0, config_1.buildConfig)({
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-    collections: [Users_1.Users, Products_1.Products, Media_1.Media, ProductFile_1.ProductFiles, Orders_1.Orders],
+    collections: [Users_1.Users, Products_1.Products, Media_1.Media, Categories_1.Categories, Orders_1.Orders],
     routes: {
         admin: "/sell", // endpoint pour la partie admin
     },

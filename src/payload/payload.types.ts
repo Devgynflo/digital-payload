@@ -8,15 +8,49 @@
 
 export interface Config {
   collections: {
-    users: User;
     products: Product;
+    categories: Category;
+    brands: Brand;
+    range_products: RangeProduct;
     media: Media;
-    product_files: ProductFile;
     orders: Order;
+    users: User;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   globals: {};
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  user?: (string | null) | User;
+  name: string;
+  description?: string | null;
+  product_usage?: string | null;
+  composition?: string | null;
+  brands: string | Brand;
+  range_product: string | RangeProduct;
+  categories: (string | Category)[];
+  slug?: string | null;
+  price: number;
+  pricePro: number;
+  supplierPrice: number;
+  quantity: number;
+  capacity: string;
+  weight: number;
+  isFeatured?: ('_isTrue' | '_isFalse') | null;
+  outOfStock?: ('_isTrue' | '_isFalse') | null;
+  priceId?: string | null;
+  stripeId?: string | null;
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -25,7 +59,6 @@ export interface Config {
 export interface User {
   id: string;
   products?: (string | Product)[] | null;
-  product_files?: (string | ProductFile)[] | null;
   role: 'admin' | 'user' | 'seller';
   updatedAt: string;
   createdAt: string;
@@ -42,44 +75,19 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products".
+ * via the `definition` "brands".
  */
-export interface Product {
+export interface Brand {
   id: string;
-  user?: (string | null) | User;
   name: string;
   description?: string | null;
-  price: number;
-  category: 'ui_kits' | 'icons';
   slug?: string | null;
-  product_files: string | ProductFile;
-  approved_for_sales?: ('pending' | 'approved' | 'denied') | null;
-  priceId?: string | null;
-  stripeId?: string | null;
   images: {
     image: string | Media;
     id?: string | null;
   }[];
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "product_files".
- */
-export interface ProductFile {
-  id: string;
-  user?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -124,6 +132,38 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "range_products".
+ */
+export interface RangeProduct {
+  id: string;
+  name: string;
+  description?: string | null;
+  slug?: string | null;
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  name: string;
+  description?: string | null;
+  slug?: string | null;
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

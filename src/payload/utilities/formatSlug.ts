@@ -2,8 +2,9 @@ import type { FieldHook } from "payload/types";
 
 const format = (val: string): string =>
   val
-    .replace(/ /g, "-")
-    .replace(/[^\w-]+/g, "")
+    .replace(/[éèêë]/g, "e") // Remplace les 'e' avec accent par 'e'
+    .replace(/ /g, "-") // Remplace les espaces par des tirets
+    .replace(/[^\w-]+/g, "") // Supprime les caractères non alphanumériques ou tirets
     .toLowerCase();
 
 const formatSlug =

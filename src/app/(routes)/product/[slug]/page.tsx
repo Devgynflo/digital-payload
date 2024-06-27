@@ -2,9 +2,10 @@ import { AddToCartButton } from "@/components/Product/add-to-cart-button";
 import { ImageSlider } from "@/components/Product/image-slider";
 import { ProductReel } from "@/components/Product/reel";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
-import { PRODUCT_CATEGORIES } from "@/config";
 import { constructMetadata, formatPrice } from "@/lib/utils";
 import { getPayloadClient } from "@/payload/get-payload-client";
+import { Category } from "@/payload/payload.types";
+
 import { Check, Shield } from "lucide-react";
 
 import { Metadata, NextPage } from "next";
@@ -13,36 +14,33 @@ import { notFound } from "next/navigation";
 
 interface ProductDetailsPageProps {
   params: {
-    productId: string;
+    slug: string;
   };
 }
 
 const BREADCRUMBS = [
   {
     id: 1,
-    name: "Home",
+    name: "Accueil",
     href: "/",
   },
   {
     id: 2,
-    name: "Products",
+    name: "Produits",
     href: "/products",
   },
 ];
 
 export async function generateMetadata({
-  params: { productId },
+  params: { slug },
 }: ProductDetailsPageProps): Promise<Metadata> {
   const payload = await getPayloadClient();
   const { docs: products } = await payload.find({
     collection: "products",
     limit: 1,
     where: {
-      id: {
-        equals: productId,
-      },
-      approved_for_sales: {
-        equals: "approved",
+      slug: {
+        equals: slug,
       },
     },
   });
@@ -67,11 +65,8 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
     collection: "products",
     limit: 1,
     where: {
-      id: {
-        equals: params.productId,
-      },
-      approved_for_sales: {
-        equals: "approved",
+      slug: {
+        equals: params.slug,
       },
     },
   });
@@ -82,9 +77,7 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
     notFound();
   }
 
-  const label = PRODUCT_CATEGORIES.find(
-    ({ value }) => value === product.category,
-  )?.label;
+  console.log("category", (product.categories[0] as Category).name);
 
   const urls = product.images
     .map(({ image }) => (typeof image === "string" ? image : image.url))
@@ -96,7 +89,7 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           {/* Product details */}
           <div className="lg:max-w-lg lg:self-end">
-            <ol className="flex items-center gap-2">
+            <ol className="flex items-center gap-1">
               {BREADCRUMBS.map((breadcrumb, i) => (
                 <li key={breadcrumb.id}>
                   <div className="flex items-center text-sm">
@@ -111,7 +104,7 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
                         viewBox="0 0 20 20"
                         fill="currentColor"
                         aria-hidden="true"
-                        className="ml-2 h-5 w-5 flex-shrink-0 text-gray-300"
+                        className="ml-1 h-5 w-5 flex-shrink-0 text-gray-300"
                       >
                         <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                       </svg>
@@ -133,7 +126,12 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
                   {formatPrice(product.price)}
                 </p>
                 <div className="ml-4 border-l border-gray-300 pl-4 text-muted-foreground">
-                  {label}
+                  {product.categories &&
+                    product.categories.map((item) => {
+                      if (typeof item === "object") {
+                        return <span key={item.id}>{item.name}</span>;
+                      }
+                    })}
                 </div>
               </div>
 
@@ -184,12 +182,12 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
         </div>
       </div>
 
-      <ProductReel
+      {/* <ProductReel
         href="/products"
         query={{ category: product.category, limit: 4 }}
         title={`Similar ${label}`}
         subtitle={`Browse similar high-quality ${label} just like '${product.name}'`}
-      />
+      /> */}
     </MaxWidthWrapper>
   );
 };

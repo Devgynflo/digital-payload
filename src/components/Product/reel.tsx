@@ -33,6 +33,7 @@ export const ProductReel: NextPage<ProductReelProps> = ({
     );
 
   const products = queryResults?.pages.flatMap((page) => page.items);
+  console.log("🚀 ~ products:", products);
 
   let map: (Product | null)[] = [];
   if (products && products.length) {
@@ -60,7 +61,10 @@ export const ProductReel: NextPage<ProductReelProps> = ({
             href={href}
             className="hidden text-sm font-bold text-blue-500 hover:text-blue-600 md:block"
           >
-            Shop the collection <span aria-hidden="true">&rarr;</span>
+            Parcourir{" "}
+            <span aria-hidden="true" className="text-base">
+              &rarr;
+            </span>
           </Link>
         )}
       </div>

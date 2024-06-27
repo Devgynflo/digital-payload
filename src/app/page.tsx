@@ -27,7 +27,7 @@ export default function Home() {
         </div>
 
         <ProductReel
-          title="Brand new"
+          title="Produits récents"
           href="/products"
           query={{ sort: "desc", limit: 4 }}
         />
