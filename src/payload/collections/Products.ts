@@ -297,15 +297,15 @@ export const Products: CollectionConfig = {
         update: ({ req }) => req.user.role === "admin",
       },
       type: "select",
-      defaultValue: "_isTrue",
+      defaultValue: "_isFalse",
       options: [
         {
           label: "En stock",
-          value: "_isTrue",
+          value: "_isFalse",
         },
         {
           label: "Victime de son succès",
-          value: "_isFalse",
+          value: "_isTrue",
         },
       ],
     },

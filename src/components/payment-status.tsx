@@ -33,19 +33,20 @@ export const PaymentStatus: NextPage<PaymentStatusProps> = ({
       clearCart();
       router.refresh();
     }
+    clearCart();
   }, [data?.isPaid, router, clearCart]);
 
   return (
-    <div className="mt-16 grid grid-cols-2 gap-x-4 text-sm text-gray-600">
+    <div className="mt-4 grid grid-cols-2 gap-x-4 text-sm text-gray-600">
       <div>
-        <p className="font-medium text-gray-900">Shipping to</p>
+        <p className="font-medium text-gray-900">Envoyé à:</p>
         <p>{orderEmail}</p>
       </div>
 
       <div>
-        <p className="font-medium text-gray-900">Order status</p>
+        <p className="font-medium text-gray-900">Status de la commande</p>
         <p className={cn(isPaid ? "text-green-500" : "text-red-500")}>
-          {isPaid ? "Payment Successful" : "Pending payment"}
+          {isPaid ? "Paiement accepté" : "Paiment en attente"}
         </p>
       </div>
     </div>

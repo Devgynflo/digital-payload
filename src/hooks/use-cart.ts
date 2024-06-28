@@ -31,7 +31,7 @@ export const useCart = create<CartState>()(
         const { items } = get();
         if (items.length) {
           return items.reduce((sum, item) => sum + item.count, 0);
-          // ~ return items.map((item) => item.count).reduce((a, b) => a + b);
+          //return items.map((item) => item.count).reduce((a, b) => a + b);
         }
         return 0;
       },

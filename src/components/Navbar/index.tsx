@@ -58,10 +58,6 @@ export const Navbar: NextPage<NavbarProps> = async ({}) => {
                       <span className="size-6 w-px bg-gray-200" aria-hidden />
                     </>
                   )}
-
-                  {/* <div className="ml-4 flow-root lg:ml-6">
-                    <Cart />
-                  </div> */}
                 </div>
                 <div className="ml-4 flow-root lg:ml-6">
                   <Cart />

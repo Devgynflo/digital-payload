@@ -42,7 +42,7 @@ export interface Product {
   capacity: string;
   weight: number;
   isFeatured?: ('_isTrue' | '_isFalse') | null;
-  outOfStock?: ('_isTrue' | '_isFalse') | null;
+  outOfStock?: ('_isFalse' | '_isTrue') | null;
   priceId?: string | null;
   stripeId?: string | null;
   images: {
@@ -174,6 +174,15 @@ export interface Order {
   is_paid: boolean;
   user: string | User;
   products: (string | Product)[];
+  total: number;
+  items?:
+    | {
+        product: string | Product;
+        price?: number | null;
+        quantity?: number | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }

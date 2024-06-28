@@ -56,5 +56,34 @@ export const Orders: CollectionConfig = {
       hasMany: true,
       required: true,
     },
+    {
+      name: "total",
+      type: "number",
+      required: true,
+      min: 0,
+    },
+
+    {
+      name: "items",
+      type: "array",
+      fields: [
+        {
+          name: "product",
+          type: "relationship",
+          relationTo: "products",
+          required: true,
+        },
+        {
+          name: "price",
+          type: "number",
+          min: 0,
+        },
+        {
+          name: "quantity",
+          type: "number",
+          min: 0,
+        },
+      ],
+    },
   ],
 };

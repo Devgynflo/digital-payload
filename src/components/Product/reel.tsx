@@ -33,7 +33,6 @@ export const ProductReel: NextPage<ProductReelProps> = ({
     );
 
   const products = queryResults?.pages.flatMap((page) => page.items);
-  console.log("🚀 ~ products:", products);
 
   let map: (Product | null)[] = [];
   if (products && products.length) {

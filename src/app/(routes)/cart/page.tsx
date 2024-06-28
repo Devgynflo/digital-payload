@@ -1,21 +1,21 @@
 "use client";
 
+import { AddRemoveBtnCart } from "@/components/add-remove-btn-cart";
 import { Button } from "@/components/ui/button";
-import { PRODUCT_CATEGORIES } from "@/config";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 import { Category } from "@/payload/payload.types";
 import { trpc } from "@/trpc/client";
-import { Check, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface Props {}
+interface CartPageProps {}
 
-const CartPage: NextPage<Props> = ({}) => {
+const CartPage: NextPage<CartPageProps> = ({}) => {
   const router = useRouter();
   const { mutate: createCheckoutSession, isLoading } =
     trpc.payment.createSession.useMutation({
@@ -25,13 +25,14 @@ const CartPage: NextPage<Props> = ({}) => {
         }
       },
     });
-  const { items, removeItem } = useCart();
+  const { items, removeItem, totalPrice } = useCart();
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const productIds = items.map((product) => product.id);
+  //const productIds = items.map((product) => product.id);
+  const productsInCart = items.map((product) => {
+    return { id: product.id, qty: product.count };
+  });
+
   const fee = 1;
-  const cartTotal = items.reduce((acc, product) => {
-    return (acc += product.price);
-  }, 0);
 
   useEffect(() => {
     setIsMounted(true);
@@ -51,13 +52,13 @@ const CartPage: NextPage<Props> = ({}) => {
             className={cn(
               "lg:col-span-7",
               isMounted &&
-                !items.length &&
+                items.length === 0 &&
                 "rounded-lg border-2 border-dashed border-zinc-200 p-12",
             )}
           >
             <h2 className="sr-only">Items in your shopping cart</h2>
 
-            {isMounted && !items.length && (
+            {isMounted && items.length === 0 && (
               <div className="flex flex-col items-center justify-center space-y-1">
                 <div
                   className="relative mb-4 size-40 text-muted-foreground"
@@ -116,7 +117,7 @@ const CartPage: NextPage<Props> = ({}) => {
                             <div className="flex justify-between">
                               <h3 className="text-sm">
                                 <Link
-                                  href={`/product/${product.id}`}
+                                  href={`/product/${product.slug}`}
                                   className="font-medium text-gray-700 hover:text-gray-800"
                                 >
                                   {product.name}
@@ -147,14 +148,10 @@ const CartPage: NextPage<Props> = ({}) => {
                               >
                                 <X aria-hidden className="size-5" />
                               </Button>
+                              <AddRemoveBtnCart id={product.id} />
                             </div>
                           </div>
                         </div>
-                        <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                          <Check className="size-5 flex-shrink-0 text-green-500" />
-
-                          <span>Eligible for instant delivery</span>
-                        </p>
                       </div>
                     </li>
                   );
@@ -169,7 +166,7 @@ const CartPage: NextPage<Props> = ({}) => {
                 <p className="tes-gray-600 text-sm">Subtotal</p>
                 <p className="text-sm font-medium text-gray-900">
                   {isMounted ? (
-                    formatPrice(cartTotal)
+                    formatPrice(totalPrice())
                   ) : (
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   )}
@@ -195,7 +192,7 @@ const CartPage: NextPage<Props> = ({}) => {
                 </div>
                 <div className="text-base font-medium text-gray-900">
                   {isMounted ? (
-                    formatPrice(fee + cartTotal)
+                    formatPrice(fee + totalPrice())
                   ) : (
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   )}
@@ -208,7 +205,7 @@ const CartPage: NextPage<Props> = ({}) => {
                 disabled={!items.length || isLoading}
                 className="w-full"
                 size={"lg"}
-                onClick={() => createCheckoutSession({ productIds })}
+                onClick={() => createCheckoutSession({ productsInCart })}
               >
                 {isLoading ? (
                   <Loader2 className="size-4 animate-spin text-muted-foreground" />

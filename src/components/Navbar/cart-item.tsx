@@ -1,19 +1,19 @@
 "use client";
 
-import { PRODUCT_CATEGORIES } from "@/config";
 import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
 import { Category, Product } from "@/payload/payload.types";
 import { ImageIcon, X } from "lucide-react";
 import { NextPage } from "next";
 import Image from "next/image";
+import { AddRemoveBtnCart } from "../add-remove-btn-cart";
 
 interface CartItemProps {
   product: Product;
 }
 
 export const CartItem: NextPage<CartItemProps> = ({ product }) => {
-  const { items, removeItem, clearCart } = useCart();
+  const { removeItem } = useCart();
   const { image } = product.images[0];
 
   return (
@@ -49,22 +49,24 @@ export const CartItem: NextPage<CartItemProps> = ({ product }) => {
               {(product.categories[0] as Category).name}
             </span>
 
-            <div className="mt-4 text-xs text-muted-foreground">
-              <button
-                onClick={() => removeItem(product.id)}
-                className="flex items-center gap-1"
-              >
-                <X className="h-4 w-3 text-red-500" />
-                Supprimer
-              </button>
+            <div className="flex items-center justify-between">
+              <div className="mt-4 text-xs text-muted-foreground">
+                <button
+                  onClick={() => removeItem(product.id)}
+                  className="flex items-center gap-1"
+                >
+                  <X className="h-4 w-3 text-red-500" />
+                  Supprimer
+                </button>
+              </div>
             </div>
-            <span className="text-red-500">{items[0].count}</span>
           </div>
         </div>
-        <div className="flex flex-col space-y-1 font-medium">
+        <div className="flex flex-col space-y-6 font-medium">
           <span className="ml-auto line-clamp-1 text-sm">
             {formatPrice(product.price)}
           </span>
+          <AddRemoveBtnCart id={product.id} />
         </div>
       </div>
     </div>

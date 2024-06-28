@@ -24,10 +24,8 @@ interface CartProps {}
 
 export const Cart: NextPage<CartProps> = ({}) => {
   const { items, count, totalPrice } = useCart();
+  //console.log("🚀 ~ items:", items);
   const fee = 1;
-  const cartTotal = items.reduce((acc, item) => {
-    return (acc += item.price);
-  }, 0);
 
   return (
     <Sheet>
@@ -37,7 +35,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
           aria-hidden
         />
         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          {items.length ? count() : ""}
+          {items.length >= 1 ? count() : ""}
         </span>
       </SheetTrigger>
 
@@ -46,7 +44,7 @@ export const Cart: NextPage<CartProps> = ({}) => {
           <SheetTitle>Panier</SheetTitle>
         </SheetHeader>
 
-        {items.length > 0 ? (
+        {items.length >= 1 ? (
           <>
             <div className="flex w-full flex-col pr-6">
               <ScrollArea>

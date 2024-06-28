@@ -77,8 +77,6 @@ const ProductDetailsPage: NextPage<ProductDetailsPageProps> = async ({
     notFound();
   }
 
-  console.log("category", (product.categories[0] as Category).name);
-
   const urls = product.images
     .map(({ image }) => (typeof image === "string" ? image : image.url))
     .filter(Boolean) as string[];

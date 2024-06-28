@@ -7,10 +7,19 @@ import type Stripe from "stripe";
 
 export const paymentRouter = router({
   createSession: privateProcedure
-    .input(z.object({ productIds: z.array(z.string()) }))
+    //.input(z.object({ productIds: z.array(z.string()) }))
+    .input(
+      z.object({
+        productsInCart: z.array(z.object({ id: z.string(), qty: z.number() })),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx;
-      let { productIds } = input;
+      //let { productIds } = input;
+      let { productsInCart } = input;
+
+      const productIds = productsInCart.map((item) => item.id);
+      //const productIds = ["667bc02a0bfaa70285604b74"];
 
       if (!productIds.length) throw new TRPCError({ code: "BAD_REQUEST" });
 
@@ -25,9 +34,28 @@ export const paymentRouter = router({
         },
       });
 
+      const totalOrder = productsInCart.reduce((total, item) => {
+        products.forEach((product) => {
+          if (product.id === item.id) total += product.price * item.qty;
+        });
+        return total;
+      }, 0);
+
       const filteredProducts = products.filter((product) =>
         Boolean(product.priceId),
       );
+
+      const productsInCartWithQuantity = filteredProducts.map((item) => {
+        const quantityPerProduct = productsInCart.find(
+          (i) => i.id === item.id,
+        )?.qty;
+
+        return {
+          product: item.id,
+          price: item.price,
+          quantity: quantityPerProduct,
+        };
+      });
 
       const order = await payload.create({
         collection: "orders",
@@ -35,6 +63,8 @@ export const paymentRouter = router({
           user: user.id,
           is_paid: false,
           products: filteredProducts.map((item) => item.id),
+          total: totalOrder,
+          items: productsInCartWithQuantity,
         },
       });
 
@@ -43,7 +73,7 @@ export const paymentRouter = router({
       filteredProducts.forEach((product) => {
         line_items.push({
           price: product.priceId!,
-          quantity: 1,
+          quantity: productsInCart.find((item) => item.id === product.id)?.qty, //1,
         });
       });
 

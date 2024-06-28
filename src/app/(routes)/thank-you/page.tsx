@@ -1,9 +1,8 @@
 import { PaymentStatus } from "@/components/payment-status";
-import { PRODUCT_CATEGORIES } from "@/config";
 import { getServerSideUser } from "@/lib/payload.utils";
 import { formatPrice } from "@/lib/utils";
 import { getPayloadClient } from "@/payload/get-payload-client";
-import { Product, ProductFile, User } from "@/payload/payload.types";
+import { Product } from "@/payload/payload.types";
 import { NextPage } from "next";
 import { cookies } from "next/headers";
 import Image from "next/image";
@@ -37,6 +36,9 @@ const ThankYouPage: NextPage<ThankYouPageProps> = async ({ searchParams }) => {
 
   if (!order) return notFound();
 
+  //const fee = order.user.isNearby ? 0 : 4.5;
+  const paymentMethod = "Visa";
+
   const orderUserId =
     typeof order.user === "string" ? order.user : order.user.id;
 
@@ -44,19 +46,143 @@ const ThankYouPage: NextPage<ThankYouPageProps> = async ({ searchParams }) => {
     return redirect(`/sign-in?origin=thank-you?orderId=${orderId}`);
   }
 
-  const products = order.products as Product[];
-
-  const orderTotal = products.reduce((acc, { price }) => {
-    return (acc += price);
-  }, 0);
-
   return (
+    <div className="relative lg:min-h-full">
+      <div className="hidden h-80 overflow-hidden lg:absolute lg:block lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
+        <Image
+          priority
+          sizes="100%"
+          src={"/swabell-logo.jpg"}
+          alt="thank-you"
+          fill
+          className="h-full w-full object-cover object-center"
+        />
+      </div>
+
+      <div>
+        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-16 xl:gap-x-24">
+          <div className="lg:col-start-2">
+            <h1 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Merci pour votre commande
+            </h1>
+            {order.is_paid ? (
+              <p className="mt-2 text-base text-muted-foreground">
+                Nous vous remercions de votre commande. Nous vous tiendrons
+                informé par e-mail lorsque les articles de votre commande auront
+                été expédiés.
+              </p>
+            ) : (
+              <p className="mt-2 text-base text-muted-foreground">
+                Votre commande est en attente de paiement. Nous vous tiendrons
+                informé par e-mail lors de l&poas;évolution de cette dernière.
+              </p>
+            )}
+
+            <div className="mt-8 text-sm font-medium">
+              <div className="text-muted-foreground">
+                Commande n°:
+                <span className="ml-2 text-gray-900 underline">{order.id}</span>
+              </div>
+            </div>
+            <div className="mt-4 text-sm text-muted-foreground">
+              {order.is_paid && (
+                <p>Moyen de paiement sélectionné : {paymentMethod}</p>
+              )}
+            </div>
+
+            <PaymentStatus
+              isPaid={order.is_paid}
+              orderEmail={user.email}
+              orderId={order.id}
+            />
+
+            <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200 text-sm text-muted-foreground">
+              {(order.products as Product[]).map((product) => {
+                const { image } = product.images[0];
+                return (
+                  <li key={product.id} className="flex space-x-6 py-6">
+                    <div className="relative size-24">
+                      {typeof image !== "string" && image.url && (
+                        <Image
+                          priority
+                          sizes="100%"
+                          className="flex-none rounded-md bg-gray-100 object-cover object-center"
+                          src={image.url}
+                          alt={`Illustration ${product.name}`}
+                          fill
+                        />
+                      )}
+                    </div>
+
+                    <div className="flex flex-auto flex-col justify-between">
+                      <div className="space-y-1">
+                        <h3 className="text-gray-900">{product.name}</h3>
+
+                        {
+                          <p className="my-1">
+                            Quantité:
+                            {
+                              order.items?.find(
+                                ({ product: p }) =>
+                                  (p as Product).id === product.id,
+                              )?.quantity
+                            }
+                          </p>
+                        }
+                      </div>
+                    </div>
+
+                    <p className="flex-none font-medium text-gray-900">
+                      {formatPrice(product.price)}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="space-y-6 border-t border-gray-200 pt-8 text-sm font-medium text-muted-foreground">
+              <div className="flex justify-between">
+                <p>Montant total de la commande:</p>
+                <p className="text-gray-900">{formatPrice(order.total)}</p>
+              </div>
+
+              <div className="flex justify-between">
+                <p>Frais de port :</p>
+                <p className="text-gray-900">{formatPrice(1)}</p>
+              </div>
+            </div>
+
+            <div className="text-gray flex items-center justify-between border-t border-gray-200 pt-6">
+              <p className="text-base">Total :</p>
+              <p className="text-base">{formatPrice(order.total + 1)}</p>
+            </div>
+
+            <div className="mt-16 border-t border-gray-200 py-6 text-right">
+              <Link
+                href={"/"}
+                className="text-sm font-medium text-blue-600 transition hover:text-blue-700"
+              >
+                Continuez vos achats &rarr;
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ThankYouPage;
+
+/* 
+
+ /* return (
     <main className="relative lg:max-h-full">
       <div className="absolute hidden h-80 overflow-hidden lg:block lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
         <Image
           priority
           sizes="100%"
-          src="/checkout-thank-you.jpg"
+          src="/swabell-logo.jpg"
           alt="thank-you"
           className="size-full object-cover object-center"
           fill
@@ -101,12 +227,7 @@ const ThankYouPage: NextPage<ThankYouPageProps> = async ({ searchParams }) => {
 
             <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200 text-sm font-medium text-muted-foreground">
               {(order.products as Product[]).map((product) => {
-                const label = PRODUCT_CATEGORIES.find(
-                  ({ value }) => value === product.category,
-                )?.label;
-
-                const downloadUrl = (product.product_files as ProductFile)
-                  .url as string;
+                const label = (product.categories[0] as Category).name;
 
                 const { image } = product.images[0];
 
@@ -132,16 +253,6 @@ const ThankYouPage: NextPage<ThankYouPageProps> = async ({ searchParams }) => {
                         <p className="my-1">Category: {label}</p>
                       </div>
                     </div>
-
-                    {order.is_paid && (
-                      <a
-                        href={downloadUrl}
-                        download={product.name}
-                        className="text-blue-600 underline-offset-2 hover:underline"
-                      >
-                        Download asset
-                      </a>
-                    )}
 
                     <p className="flex-none font-medium text-gray-900">
                       {formatPrice(product.price)}
@@ -186,7 +297,6 @@ const ThankYouPage: NextPage<ThankYouPageProps> = async ({ searchParams }) => {
         </div>
       </div>
     </main>
-  );
-};
-
-export default ThankYouPage;
+  ); 
+}
+*/
