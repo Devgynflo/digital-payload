@@ -44,15 +44,20 @@ var get_payload_client_1 = require("../payload/get-payload-client");
 var stripe_1 = require("../lib/stripe");
 exports.paymentRouter = (0, trpc_1.router)({
     createSession: trpc_1.privateProcedure
-        .input(zod_1.z.object({ productIds: zod_1.z.array(zod_1.z.string()) }))
+        //.input(z.object({ productIds: z.array(z.string()) }))
+        .input(zod_1.z.object({
+        productsInCart: zod_1.z.array(zod_1.z.object({ id: zod_1.z.string(), qty: zod_1.z.number() })),
+    }))
         .mutation(function (_a) { return __awaiter(void 0, [_a], void 0, function (_b) {
-        var user, productIds, payload, products, filteredProducts, order, line_items, stripeSession, error_1;
+        var user, productsInCart, productIds, payload, products, totalOrder, filteredProducts, productsInCartWithQuantity, order, line_items, stripeSession, error_1;
         var ctx = _b.ctx, input = _b.input;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     user = ctx.user;
-                    productIds = input.productIds;
+                    productsInCart = input.productsInCart;
+                    productIds = productsInCart.map(function (item) { return item.id; });
+                    //const productIds = ["667bc02a0bfaa70285604b74"];
                     if (!productIds.length)
                         throw new server_1.TRPCError({ code: "BAD_REQUEST" });
                     return [4 /*yield*/, (0, get_payload_client_1.getPayloadClient)()];
@@ -68,8 +73,24 @@ exports.paymentRouter = (0, trpc_1.router)({
                         })];
                 case 2:
                     products = (_c.sent()).docs;
+                    totalOrder = productsInCart.reduce(function (total, item) {
+                        products.forEach(function (product) {
+                            if (product.id === item.id)
+                                total += product.price * item.qty;
+                        });
+                        return total;
+                    }, 0);
                     filteredProducts = products.filter(function (product) {
                         return Boolean(product.priceId);
+                    });
+                    productsInCartWithQuantity = filteredProducts.map(function (item) {
+                        var _a;
+                        var quantityPerProduct = (_a = productsInCart.find(function (i) { return i.id === item.id; })) === null || _a === void 0 ? void 0 : _a.qty;
+                        return {
+                            product: item.id,
+                            price: item.price,
+                            quantity: quantityPerProduct,
+                        };
                     });
                     return [4 /*yield*/, payload.create({
                             collection: "orders",
@@ -77,15 +98,18 @@ exports.paymentRouter = (0, trpc_1.router)({
                                 user: user.id,
                                 is_paid: false,
                                 products: filteredProducts.map(function (item) { return item.id; }),
+                                total: totalOrder,
+                                items: productsInCartWithQuantity,
                             },
                         })];
                 case 3:
                     order = _c.sent();
                     line_items = [];
                     filteredProducts.forEach(function (product) {
+                        var _a;
                         line_items.push({
                             price: product.priceId,
-                            quantity: 1,
+                            quantity: (_a = productsInCart.find(function (item) { return item.id === product.id; })) === null || _a === void 0 ? void 0 : _a.qty, //1,
                         });
                     });
                     line_items.push({

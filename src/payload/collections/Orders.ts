@@ -1,4 +1,5 @@
 import { Access, CollectionConfig } from "payload/types";
+import { updateProductQuantity } from "./Order/hook/updateQuantityProduct";
 
 const yourOwn: Access = ({ req: { user } }) => {
   if (user.role === "admin") return true;
@@ -20,6 +21,7 @@ export const Orders: CollectionConfig = {
     useAsTitle: "Your Orders",
     description: "A summary of all your orders on DigitalHippo",
   },
+  hooks: { afterChange: [updateProductQuantity] },
   access: {
     create: ({ req }) => req.user.role === "admin",
     read: yourOwn,

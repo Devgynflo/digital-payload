@@ -10,18 +10,29 @@ var bundler_webpack_1 = require("@payloadcms/bundler-webpack");
 var path_1 = __importDefault(require("path"));
 var Users_1 = require("./collections/Users");
 var dotenv_1 = __importDefault(require("dotenv"));
+// Collection
 var Products_1 = require("./collections/Products");
 var Media_1 = require("./collections/Media");
 var Categories_1 = require("./collections/Categories");
 var Orders_1 = require("./collections/Orders");
+var Brands_1 = require("./collections/Brands");
+var RangeProducts_1 = require("./collections/RangeProducts");
 dotenv_1.default.config({
     path: path_1.default.resolve(__dirname, "../../.env"),
 });
 exports.default = (0, config_1.buildConfig)({
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-    collections: [Users_1.Users, Products_1.Products, Media_1.Media, Categories_1.Categories, Orders_1.Orders],
+    collections: [
+        Products_1.Products,
+        Categories_1.Categories,
+        Brands_1.Brands,
+        RangeProducts_1.RangeProducts,
+        Media_1.Media,
+        Orders_1.Orders,
+        Users_1.Users,
+    ],
     routes: {
-        admin: "/sell", // endpoint pour la partie admin
+        admin: "/dashboard", // endpoint pour la partie admin
     },
     admin: {
         user: "users", // issue => throw new DuplicateCollection('slug', duplicateSlugs)

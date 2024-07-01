@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Orders = void 0;
+var updateQuantityProduct_1 = require("./Order/hook/updateQuantityProduct");
 var yourOwn = function (_a) {
     var user = _a.req.user;
     if (user.role === "admin")
@@ -13,10 +14,15 @@ var yourOwn = function (_a) {
 };
 exports.Orders = {
     slug: "orders",
+    labels: {
+        singular: "Commande",
+        plural: "Commandes",
+    },
     admin: {
         useAsTitle: "Your Orders",
         description: "A summary of all your orders on DigitalHippo",
     },
+    hooks: { afterChange: [updateQuantityProduct_1.updateProductQuantity] },
     access: {
         create: function (_a) {
             var req = _a.req;
@@ -64,6 +70,34 @@ exports.Orders = {
             relationTo: "products",
             hasMany: true,
             required: true,
+        },
+        {
+            name: "total",
+            type: "number",
+            required: true,
+            min: 0,
+        },
+        {
+            name: "items",
+            type: "array",
+            fields: [
+                {
+                    name: "product",
+                    type: "relationship",
+                    relationTo: "products",
+                    required: true,
+                },
+                {
+                    name: "price",
+                    type: "number",
+                    min: 0,
+                },
+                {
+                    name: "quantity",
+                    type: "number",
+                    min: 0,
+                },
+            ],
         },
     ],
 };

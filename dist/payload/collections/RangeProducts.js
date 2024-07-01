@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Categories = void 0;
+exports.RangeProducts = void 0;
 var slug_1 = require("../fields/slug");
-exports.Categories = {
-    slug: "categories",
+exports.RangeProducts = {
+    slug: "range_products",
     labels: {
-        singular: "Catégorie",
-        plural: "Catégories",
+        singular: "Gamme de produit",
+        plural: "Gammes de produits",
     },
     admin: {
         useAsTitle: "name",
@@ -35,7 +35,7 @@ exports.Categories = {
     fields: [
         {
             name: "name",
-            label: "Titre de la catégorie",
+            label: "Gamme de produit",
             type: "text",
             required: true,
         },
@@ -47,7 +47,7 @@ exports.Categories = {
         (0, slug_1.slugField)(),
         {
             name: "images",
-            label: "Image de la catégorie",
+            label: "Image de la gamme de produit",
             minRows: 1,
             maxRows: 1,
             type: "array",

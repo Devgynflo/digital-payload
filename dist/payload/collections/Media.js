@@ -68,6 +68,10 @@ var isAdminOrHasAccessToImages = function () {
 };
 exports.Media = {
     slug: "media",
+    labels: {
+        singular: "Image",
+        plural: "Images",
+    },
     hooks: {
         beforeChange: [
             function (_a) {

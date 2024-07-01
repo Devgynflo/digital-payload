@@ -24,6 +24,7 @@ export const stripeWebhookHandler = async (
       signature,
       process.env.STRIPE_WEBHOOK_SECRET || "",
     );
+    console.log("🚀 ~ event:", event);
   } catch (err) {
     return res
       .status(400)

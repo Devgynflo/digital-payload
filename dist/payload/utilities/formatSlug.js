@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var format = function (val) {
     return val
-        .replace(/ /g, "-")
-        .replace(/[^\w-]+/g, "")
+        .replace(/[éèêë]/g, "e") // Remplace les 'e' avec accent par 'e'
+        .replace(/ /g, "-") // Remplace les espaces par des tirets
+        .replace(/[^\w-]+/g, "") // Supprime les caractères non alphanumériques ou tirets
         .toLowerCase();
 };
 var formatSlug = function (fallback) {

@@ -14,6 +14,10 @@ var adminsAndUser = function (_a) {
 };
 exports.Users = {
     slug: "users",
+    labels: {
+        singular: "Utilisateur",
+        plural: "Utilisateurs",
+    },
     auth: {
         verify: {
             generateEmailHTML: function (_a) {
